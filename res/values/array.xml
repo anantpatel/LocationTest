@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+   
+    <string-array name="audioProfileList">
+        <item>Normal</item>
+        <item>Vibrate</item>
+        <item>Silent</item>
+    </string-array>
+    <string-array name="audioProfilevalues">
+        <item>Normal</item>
+        <item>Vibrate</item>
+        <item>Silent</item>
+    </string-array>      
+
+</resources>

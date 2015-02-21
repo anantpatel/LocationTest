@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+    
+<PreferenceCategory
+            android:title="Audio Manager">
+
+         <CheckBoxPreference
+                android:key="checkbox_preference"
+                android:title="Vibrate !"
+                android:summary="Vibration feedback for calls" />
+		
+		<RingtonePreference android:showDefault="true"
+			     android:key="AudioNotification" android:title="Notification Noise"
+			     android:ringtoneType="notification" />
+		<RingtonePreference android:showDefault="true"
+			     android:key="AudioAlarm" android:title="Alarm Noise"
+			     android:ringtoneType="alarm" />
+		<ListPreference
+		    	android:key="audio_profile"
+		    	android:title="Sound"
+		    	android:entries="@array/audioProfileList"
+            	android:entryValues="@array/audioProfilevalues" />
+		    	/>
+		<PreferenceScreen
+                android:key="Audio_Volume"
+                android:title="Volume"
+                android:summary="Set Audio Volume">
+            	   
+		    
+		    <net.jayschwa.android.preference.SliderPreference
+				    android:key="volume_media"
+				    android:title="Media"
+				    android:summary="Control Video, Game or Media Volume"
+				    android:defaultValue="15.0"
+				    android:dialogMessage="Adjust Media Volume" />
+		    
+		    <net.jayschwa.android.preference.SliderPreference
+				    android:key="volume_ringer"
+				    android:title="Ringer"
+				    android:summary="Control Ringer"
+				    android:defaultValue="1.0"
+				    android:dialogMessage="Adjust Ringer Volume" />
+		    
+		    <net.jayschwa.android.preference.SliderPreference
+				    android:key="volume_alarm"
+				    android:title="Alarm"
+				    android:summary="Control Alarm Volume"
+				    android:defaultValue="1.0"
+				    android:dialogMessage="Adjust Alarm Volume" />
+		    
+        </PreferenceScreen>
+    </PreferenceCategory>
+
+   <PreferenceCategory
+            android:title="Network Manager">
+		<CheckBoxPreference
+                android:key="NetworkWifi"
+                android:title="WiFi"
+                android:summary="Toggle Phone Wifi" />
+        <CheckBoxPreference
+                android:key="Networkdata"
+                android:title="Mobile Data"
+                android:summary="Toggle Phone Data" />
+       
+    </PreferenceCategory>
+
+    <PreferenceCategory
+            android:title="Location Manager">
+
+        <CheckBoxPreference
+                android:key="parent_checkbox_preference"
+                android:title="title_parent_preference"
+                android:summary="summary_parent_preference" />
+
+        <!-- The visual style of a child is defined by this styled theme attribute. -->
+        <CheckBoxPreference
+                android:key="child_checkbox_preference"
+                android:dependency="parent_checkbox_preference"
+                android:layout="?android:attr/preferenceLayoutChild"
+                android:title="title_child_preference"
+                android:summary="summary_child_preference" />
+
+    </PreferenceCategory>
+</PreferenceScreen>
