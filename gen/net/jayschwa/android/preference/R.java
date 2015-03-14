@@ -8,11 +8,11 @@ package net.jayschwa.android.preference;
 
 public final class R {
 	public static final class id {
-		public static final int slider_preference_layout = 0x7f0a005b;
-		public static final int slider_preference_seekbar = 0x7f0a005c;
+		public static final int slider_preference_layout = 0x7f0a0078;
+		public static final int slider_preference_seekbar = 0x7f0a0079;
 	}
 	public static final class layout {
-		public static final int slider_preference_dialog = 0x7f03001c;
+		public static final int slider_preference_dialog = 0x7f030022;
 	}
 	public static final class styleable {
 		public static final int[] SliderPreference = { 0x010101e9 };

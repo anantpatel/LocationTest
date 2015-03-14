@@ -6,6 +6,7 @@ import android.support.v7.app.ActionBar;
 //import android.app.FragmentTransaction;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.widget.Toast;
 
 
 public class TabListener implements ActionBar.TabListener{
@@ -21,7 +22,7 @@ public class TabListener implements ActionBar.TabListener{
 	public void onTabReselected(android.support.v7.app.ActionBar.Tab arg0,
 			FragmentTransaction arg1) {
 		// TODO Auto-generated method stub
-		
+		fragment.onResume();
 	}
 
 	@Override

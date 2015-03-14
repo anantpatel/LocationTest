@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+	
+    	    <TextView
+	        android:id="@+id/textView1"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="Rule Name" />
+	
+	    <EditText
+	        android:id="@+id/txt_rulename"
+	        android:layout_width="317dp"
+	        android:layout_height="wrap_content"
+	        android:ems="10" >
+	
+	        <requestFocus />
+	    </EditText>
+	 
+     <Spinner
+        android:id="@+id/profile_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <View
+    android:layout_width="fill_parent"
+    android:layout_height="1dip"
+    android:background="#000000" />
+
+	 <TextView
+	     android:layout_width="wrap_content"
+	     android:layout_height="wrap_content"
+	     android:layout_marginTop="@dimen/abc_action_bar_icon_vertical_padding"
+	     android:text="Calendar" />
+
+	 <EditText
+        android:id="@+id/keyword"
+        android:layout_width="317dp"
+        android:layout_height="wrap_content"
+        android:ems="10" 
+        android:hint="Enter Keyword">
+	 </EditText>
+	 <View
+    android:layout_width="fill_parent"
+    android:layout_height="2dip"
+    android:background="#000000" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Location" />
+
+    <Spinner
+        android:id="@+id/location_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+	 <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="From" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:orientation="horizontal" >
+   
+	    <Button
+            android:id="@+id/btnfromdate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginBottom="15dp"
+            android:minWidth="150dip"
+            android:onClick="onbtnDateCB"
+            android:text="" />
+	    <Button
+            android:id="@+id/btnfromtime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginBottom="15dp"
+            android:minWidth="100dip"
+            android:onClick="onbtnTimeCB"
+            android:text="" />
+	</LinearLayout>
+	<TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="To" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal" >
+   
+	    <Button
+            android:id="@+id/btntodate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginBottom="15dp"
+            android:minWidth="150dip"
+            android:onClick="onbtnDateCB"
+            android:text="" />
+	    <Button
+            android:id="@+id/btntotime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginBottom="15dp"
+            android:minWidth="100dip"
+            android:onClick="onbtnTimeCB"
+            android:text="" />
+	</LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/btnRuleCreateCancelCB"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginBottom="15dp"
+            android:minWidth="100dip"
+            android:onClick="onbtnCancelCB"
+            android:text="Cancel" />
+
+        <Button
+            android:id="@+id/btnSaveRule"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="100dp"
+            android:layout_marginBottom="15dp"
+            android:minWidth="100dip"
+            android:onClick="onbtnSaveCB"
+            android:text="Save" />
+
+    </LinearLayout>
+
+</LinearLayout>

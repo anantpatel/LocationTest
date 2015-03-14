@@ -1,6 +1,8 @@
 package com.example.locationtest;
 
 import java.io.IOException;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -21,22 +23,33 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import android.widget.AdapterView.OnItemLongClickListener;
 
 
 import android.support.v4.app.Fragment;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
+
+import android.graphics.Color;
 
 public class Location_FragTab extends Fragment implements 
 	GooglePlayServicesClient.ConnectionCallbacks, 
@@ -46,7 +59,11 @@ public class Location_FragTab extends Fragment implements
 	{
 		//Context 
 		ViewGroup m_Container;
-	
+		LayoutInflater m_Layout;
+		LocationAdaptor LocationAdpt;
+		private ListView locationlstView;
+		SettingsManager m_SettingMgr;
+		
 		//Location Based Members
 		private LocationClient m_LocationClient;
 		// Global variable to hold the current location
@@ -60,11 +77,15 @@ public class Location_FragTab extends Fragment implements
 	    private TextView mAddress;
 	    private ProgressBar mActivityIndicator;
 	    private TextView mConnectionStatus;
+
+		protected List<LocationInfo> m_LocationProfileMap;
 	    
 	    
 	    //Constants
+		static final String PREF_LOCATIONMAP = "LocationProfileMap";
 	    static final int REQUEST_CODE_RECOVER_PLAY_SERVICES = 1001;
 	    private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
+	    
 	    // Milliseconds per second
 	    private static final int MILLISECONDS_PER_SECOND = 1000;
 	    // Update frequency in seconds
@@ -85,6 +106,7 @@ public class Location_FragTab extends Fragment implements
 			 
 			 //Create Instances Locations related member variables
 			 m_Container = container;
+			 m_Layout = (LayoutInflater) container.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			 m_LocationClient = new LocationClient(container.getContext(), this,this ); 
 			 m_LocationClient.connect();
 			 
@@ -117,7 +139,22 @@ public class Location_FragTab extends Fragment implements
 			 Button btn_stopUpdate = (Button) rootView.findViewById(R.id.stop_updates);
 			 btn_stopUpdate.setOnClickListener((OnClickListener) this);
 			 
-			 return rootView;
+			 Button btn_addLocation = (Button)rootView.findViewById(R.id.btn_addlocation);
+			 btn_addLocation.setOnClickListener((OnClickListener)this);
+			 
+			 locationlstView = (ListView) rootView.findViewById(R.id.lv_location);
+			 
+			 //Fetch locations from Sharedpreference.
+			 m_SettingMgr = SettingsManager.getInstance();
+			 
+			 m_LocationProfileMap = m_SettingMgr.getLocationProfileMapping(getActivity());
+			
+			 if( m_LocationProfileMap != null )
+			 {
+				 setLocationListUI();
+			 }
+			 //startUpdates(null);
+		    return rootView;
 			 
 		 }
 		
@@ -128,17 +165,16 @@ public class Location_FragTab extends Fragment implements
 		 *
 		 * @param v The view object associated with this method, in this case a Button.
 		 */
-		public void getLocation(View v) {
-			Toast.makeText(v.getContext(), "Clicked", Toast.LENGTH_SHORT).show();
-		    // If Google Play Services is available
+		public Location getLocation(View v) {
+			// If Google Play Services is available
 		   if (servicesConnected()) {
 		
 		        // Get the current location
 		        Location currentLocation = m_LocationClient.getLastLocation();
-		
-		        // Display the current location in the UI
-		        mLatLng.setText(Double.toString(currentLocation.getLatitude())+ ","+ Double.toString(currentLocation.getLongitude()));
+				        
+		        return currentLocation;
 		    }
+		   return null;
 		}
 		
 		/**
@@ -342,60 +378,186 @@ public class Location_FragTab extends Fragment implements
 	            case R.id.get_address_button:
 	            	getAddress(v);
 	            break;
-	            case R.id.start_updates:
+	          /*  case R.id.start_updates:
 	            	startUpdates(v);
 	            	break;
 	            case R.id.stop_updates:
 	            	stopUpdates(v);
+	            	break;*/
+	            case R.id.btn_addlocation:
+	            	addLocation(v);
 	            	break;
 	        }   
 			
 		}
 		
 		
-		/**
-	     * Invoked by the "Start Updates" button
-	     * Sends a request to start location updates
-	     *
-	     * @param v The view object associated with this method, in this case a Button.
-	     */
-	    public void startUpdates(View v) {
-	        mUpdatesRequested = true;
+		private void addLocation(View v) {
+			// TODO Auto-generated method stub
+			showNewLocationUI();
+		}
 
-	        if (servicesConnected()) {
-	        	startPeriodicUpdates();
-	        }
-	    }
-	    /**
-	     * In response to a request to start updates, send a request
-	     * to Location Services
-	     */
-	    private void startPeriodicUpdates() {
-	    	m_LocationClient.requestLocationUpdates(mLocationRequest, this);
-	    	mConnectionStatus.setText("Location Requested");
-	    }
-	    /**
-	     * Invoked by the "Stop Updates" button
-	     * Sends a request to remove location updates
-	     * request them.
-	     *
-	     * @param v The view object associated with this method, in this case a Button.
-	     */
-	    public void stopUpdates(View v) {
-	        mUpdatesRequested = false;
+		private void showNewLocationUI() {
+			// TODO Auto-generated method stub
+			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+		    // Get the layout inflater
+		    LayoutInflater inflater = getActivity().getLayoutInflater();
+		    final View vi = inflater.inflate(R.layout.dialog_additem, null);
+		    final EditText edittxt = (EditText) vi.findViewById(R.id.dialog_Text);
+		    edittxt.setHint("Location Name");
+		    // Inflate and set the layout for the dialog
+		    // Pass null as the parent view because its going in the dialog layout
+		    builder.setView(vi)
+		    // Add action buttons
+		           .setPositiveButton("Create", new DialogInterface.OnClickListener() {
+		               @Override
+		               public void onClick(DialogInterface dialog, int id) {
+		                   	            	   
+		            	   //Create new locationInfo
+		            	   saveLocation(edittxt.getText().toString());
+		            	   
+		            	
+		               }
+		           })
+		           .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+		               public void onClick(DialogInterface dialog, int id) {
+		                   //this.getDialog().cancel();
+		            	   dialog.cancel();
+		               }
+		           });      
+		     builder.setTitle("Create Location");
+		     
+		     
+		     builder.create().show();
+		}
 
-	        if (servicesConnected()) {
-	            stopPeriodicUpdates();
-	        }
-	    }
+		protected void saveLocation(String location) {
+			// TODO Auto-generated method stub
+			//Fetch current Location
+			Location currentLocation = getLocation(null);
+			//Create location info
+			LocationInfo locationinfo = new LocationInfo(location, 
+        			   "Normal", 
+        			   currentLocation.getLongitude(), 
+        			   currentLocation.getLatitude());
+			//Add locationinfo to Profile Map;
+			if(m_LocationProfileMap == null)
+			{
+				m_LocationProfileMap = new ArrayList<LocationInfo>();
+			}
+			/*LocationInfo locationinfo2 = new LocationInfo("Home", 
+     			   "Silent", -121.150346,38.646512);
+        	
+        	m_LocationProfileMap.add(locationinfo2);*/
+			m_LocationProfileMap.add(locationinfo);
+			m_SettingMgr.saveLocationProfileMapping(getActivity(), m_LocationProfileMap);
+	       
+        	//Update UI
+        	setLocationListUI();
+			
+		}
+
+		protected void setLocationListUI() {
+			// TODO Auto-generated method stub
+			String[] strarray = new String[m_LocationProfileMap.size()];
+			LocationAdpt = new LocationAdaptor(m_Container.getContext(), R.id.locationListRow, R.id.locationName, strarray);
+			locationlstView.setAdapter(LocationAdpt);
+			
+			OnItemLongClickListener mLongClickHandler = new OnItemLongClickListener() {
+
+				@Override
+				public boolean onItemLongClick(AdapterView<?> parent, View view,
+						int position, long id) {
+					// TODO Auto-generated method stub
+					//TODO Add Popup for EDIT/DELETE Option
+					locationActionDialog(position);
+					//editProfile(position);
+					return false;
+				}
+			};
+			
+			locationlstView.setOnItemLongClickListener(mLongClickHandler);
+		}
+		
+		protected void locationActionDialog(final int position) {
+			// TODO Auto-generated method stub
+			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+		    // Get the layout inflater
+		    LayoutInflater inflater = getActivity().getLayoutInflater();
+		    final View vi = inflater.inflate(R.layout.dialog_additem, null);
+		    // Inflate and set the layout for the dialog
+		    // Pass null as the parent view because its going in the dialog layout
+		    builder.setView(vi)
+		    // Add action buttons
+		           .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+		               @Override
+		               public void onClick(DialogInterface dialog, int id) {
+		                   // sign in the user ...
+		            	   deleteLocation(position);
+		               }
+		           })
+		           .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+		               public void onClick(DialogInterface dialog, int id) {
+		                   dialog.cancel();
+		               }
+		           });      
+		     builder.setTitle("Create Profile");
+		     
+		     
+		     builder.create().show();
+			
+		}
+
+		protected void deleteLocation(int position) {
+			// TODO Auto-generated method stub
+			if( position >= 0 && position < m_LocationProfileMap.size())
+			{
+				m_LocationProfileMap.remove(position);				
+				
+				m_SettingMgr.saveLocationProfileMapping(getActivity(), m_LocationProfileMap);
+				setLocationListUI();
+			}
+		}
+
+		private class LocationAdaptor extends ArrayAdapter<String>
+		{
+
+			public LocationAdaptor(Context context, int resource,
+					int textViewResourceId,String[] objects) {
+				super(context, resource, textViewResourceId, objects);
+				// TODO Auto-generated constructor stub
+			}
+			
+			@Override
+			public View getView(int position, View convertView, ViewGroup parent) {
+				
+				View view = m_Layout.inflate(R.layout.location_list_row, parent, false);
+				/*TextView txtView = (TextView) view.findViewById(R.id.profileName);
+				txtView.setText(m_LocationProfileMap.get(position).getProfileName());
+				txtView.setTextColor(Color.BLACK);*/
+				
+				TextView txtView = (TextView) view.findViewById(R.id.locationName);
+				txtView.setText(m_LocationProfileMap.get(position).getLocationName());
+				
+				txtView = (TextView) view.findViewById(R.id.locationvalue);
+				txtView.setText(m_LocationProfileMap.get(position).getLocationValue());
+				
+				convertView = view;
+				convertView.setBackgroundColor(Color.WHITE);
+				return convertView;
+			
+			}
+			
+			
+		}
+
+		
+
+	    @Override
+	    public void onResume()
+	    {
+	    	//setLocationListUI();
+	    	super.onResume();
 	    
-	    /**
-	     * In response to a request to stop updates, send a request to
-	     * Location Services
-	     */
-	    private void stopPeriodicUpdates() {
-	    	m_LocationClient.removeLocationUpdates(this);
-	    	mConnectionStatus.setText("Stopped");
 	    }
-
 }
